@@ -1,5 +1,7 @@
 import { FastifyInstance } from "fastify";
 import { userControllers } from "./user.controller";
+import { authMiddleware } from "../../middlewares/authMiddleware";
+import { UserRole } from "../../global/global.interface";
 
 export const userRoutes = async (app: FastifyInstance) => {
   app.post("/user/", userControllers.createUserController);
@@ -15,9 +17,21 @@ export const userRoutes = async (app: FastifyInstance) => {
     userControllers.getSingleUserByEmailController
   );
 
-  app.patch("/user/:userId/", userControllers.updateSingleUserController);
+  app.patch(
+    "/user/:userId/",
+    { preHandler: [authMiddleware(UserRole.ADMIN)] },
+    userControllers.updateSingleUserController
+  );
 
-  app.delete("/user/:userId/", userControllers.deleteSingleUserController);
+  app.delete(
+    "/user/:userId/",
+    { preHandler: [authMiddleware(UserRole.ADMIN)] },
+    userControllers.deleteSingleUserController
+  );
 
-  app.post("/user/bulk-delete/", userControllers.deleteManyUsersController);
+  app.post(
+    "/user/bulk-delete/",
+    { preHandler: [authMiddleware(UserRole.ADMIN)] },
+    userControllers.deleteManyUsersController
+  );
 };

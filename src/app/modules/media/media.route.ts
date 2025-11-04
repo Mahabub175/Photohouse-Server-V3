@@ -1,10 +1,20 @@
 import { FastifyInstance } from "fastify";
 import { mediaControllers } from "./media.controller";
+import { authMiddleware } from "../../middlewares/authMiddleware";
+import { UserRole } from "../../global/global.interface";
 
 export const mediaRoutes = async (app: FastifyInstance) => {
-  app.post("/media/", mediaControllers.createMediaController);
+  app.post(
+    "/media/",
+    { preHandler: [authMiddleware(UserRole.ADMIN)] },
+    mediaControllers.createMediaController
+  );
 
-  app.post("/media/bulk/", mediaControllers.createBulkMediasController);
+  app.post(
+    "/media/bulk/",
+    { preHandler: [authMiddleware(UserRole.ADMIN)] },
+    mediaControllers.createBulkMediasController
+  );
 
   app.get("/media/", mediaControllers.getAllMediasController);
 
@@ -15,9 +25,21 @@ export const mediaRoutes = async (app: FastifyInstance) => {
     mediaControllers.getSingleMediaBySlugController
   );
 
-  app.patch("/media/:mediaId/", mediaControllers.updateSingleMediaController);
+  app.patch(
+    "/media/:mediaId/",
+    { preHandler: [authMiddleware(UserRole.ADMIN)] },
+    mediaControllers.updateSingleMediaController
+  );
 
-  app.delete("/media/:mediaId/", mediaControllers.deleteSingleMediaController);
+  app.delete(
+    "/media/:mediaId/",
+    { preHandler: [authMiddleware(UserRole.ADMIN)] },
+    mediaControllers.deleteSingleMediaController
+  );
 
-  app.post("/media/bulk-delete/", mediaControllers.deleteManyMediasController);
+  app.post(
+    "/media/bulk-delete/",
+    { preHandler: [authMiddleware(UserRole.ADMIN)] },
+    mediaControllers.deleteManyMediasController
+  );
 };

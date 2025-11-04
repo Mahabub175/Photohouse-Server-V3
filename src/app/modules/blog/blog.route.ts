@@ -1,10 +1,20 @@
 import { FastifyInstance } from "fastify";
 import { blogControllers } from "./blog.controller";
+import { authMiddleware } from "../../middlewares/authMiddleware";
+import { UserRole } from "../../global/global.interface";
 
 export const blogRoutes = async (app: FastifyInstance) => {
-  app.post("/blog/", blogControllers.createBlogController);
+  app.post(
+    "/blog/",
+    { preHandler: [authMiddleware(UserRole.ADMIN)] },
+    blogControllers.createBlogController
+  );
 
-  app.post("/blog/bulk/", blogControllers.createBulkBlogsController);
+  app.post(
+    "/blog/bulk/",
+    { preHandler: [authMiddleware(UserRole.ADMIN)] },
+    blogControllers.createBulkBlogsController
+  );
 
   app.get("/blog/", blogControllers.getAllBlogController);
 
@@ -15,9 +25,21 @@ export const blogRoutes = async (app: FastifyInstance) => {
     blogControllers.getSingleBlogBySlugController
   );
 
-  app.patch("/blog/:blogId/", blogControllers.updateSingleBlogController);
+  app.patch(
+    "/blog/:blogId/",
+    { preHandler: [authMiddleware(UserRole.ADMIN)] },
+    blogControllers.updateSingleBlogController
+  );
 
-  app.delete("/blog/:blogId/", blogControllers.deleteSingleBlogController);
+  app.delete(
+    "/blog/:blogId/",
+    { preHandler: [authMiddleware(UserRole.ADMIN)] },
+    blogControllers.deleteSingleBlogController
+  );
 
-  app.post("/blog/bulk-delete/", blogControllers.deleteManyBlogsController);
+  app.post(
+    "/blog/bulk-delete/",
+    { preHandler: [authMiddleware(UserRole.ADMIN)] },
+    blogControllers.deleteManyBlogsController
+  );
 };
