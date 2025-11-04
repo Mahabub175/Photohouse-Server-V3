@@ -14,6 +14,7 @@ export interface IArtist {
 export interface IMedia {
   artists: IArtist[];
   image: string;
+  thumbnail: string;
   slug: string;
   home_slider: boolean;
   click: string;

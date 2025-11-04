@@ -17,6 +17,7 @@ const artistSchema = new Schema<IArtist>({
 const mediaSchema = new Schema<IMedia>({
   artists: { type: [artistSchema] },
   image: { type: String, required: true },
+  thumbnail: { type: String },
   slug: { type: String },
   home_slider: { type: Boolean, default: false },
   click: { type: String },

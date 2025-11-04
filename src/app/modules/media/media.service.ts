@@ -44,8 +44,8 @@ export const getAllMediasService = async (
 
     result.results = formatResultImage<IMedia>(result.results, [
       "image",
+      "thumbnail",
       "artists.image",
-      "flag",
     ]) as unknown as typeof result.results;
 
     return result;
@@ -55,24 +55,28 @@ export const getAllMediasService = async (
   return {
     results: formatResultImage<IMedia>(results, [
       "image",
+      "thumbnail",
       "artists.image",
-      "flag",
     ]) as IMedia[],
   };
 };
 
 // Get single media
-export const getSingleMediaService = async (slug: string) => {
-  const media = await mediaModel.findOne({ slug }).exec();
+export const getSingleMediaService = async (mediaId: string) => {
+  const queryId =
+    typeof mediaId === "string"
+      ? new mongoose.Types.ObjectId(mediaId)
+      : mediaId;
 
+  const media = await mediaModel.findById(queryId).exec();
   if (!media) throwError("Media not found", 404);
   else {
     const mediaObj = media.toObject() as IMedia;
 
     if (mediaObj.image)
       mediaObj.image = formatResultImage(mediaObj.image) as string;
-    if (mediaObj.flag)
-      mediaObj.flag = formatResultImage(mediaObj.flag) as string;
+    if (mediaObj.thumbnail)
+      mediaObj.thumbnail = formatResultImage(mediaObj.thumbnail) as string;
 
     if (mediaObj.artists?.length) {
       mediaObj.artists = mediaObj.artists.map((artist) => ({
@@ -87,20 +91,18 @@ export const getSingleMediaService = async (slug: string) => {
   }
 };
 
-// Get single media
-export const getSingleMediaBySlugService = async (mediaId: string) => {
-  const queryId =
-    typeof mediaId === "string"
-      ? new mongoose.Types.ObjectId(mediaId)
-      : mediaId;
+// Get single media by slug
+export const getSingleMediaBySlugService = async (slug: string) => {
+  const media = await mediaModel.findOne({ slug }).exec();
 
-  const media = await mediaModel.findById(queryId).exec();
   if (!media) throwError("Media not found", 404);
   else {
     const mediaObj = media.toObject() as IMedia;
 
     if (mediaObj.image)
       mediaObj.image = formatResultImage(mediaObj.image) as string;
+    if (mediaObj.thumbnail)
+      mediaObj.thumbnail = formatResultImage(mediaObj.thumbnail) as string;
 
     if (mediaObj.artists?.length) {
       mediaObj.artists = mediaObj.artists.map((artist) => ({
@@ -139,6 +141,13 @@ export const updateSingleMediaService = async (
 
     if (mediaData.image && media.image && mediaData.image !== media.image) {
       deleteFileSync(media.image);
+    }
+    if (
+      mediaData.thumbnail &&
+      media.thumbnail &&
+      mediaData.thumbnail !== media.thumbnail
+    ) {
+      deleteFileSync(media.thumbnail);
     }
 
     if (mediaData.artists) {
@@ -190,6 +199,7 @@ export const deleteSingleMediaService = async (mediaId: string) => {
   if (!media) throwError("Media not found", 404);
   else {
     if (media.image) deleteFileSync(media.image);
+    if (media.thumbnail) deleteFileSync(media.thumbnail);
 
     if (media.artists?.length) {
       for (const artist of media.artists) {
@@ -219,6 +229,7 @@ export const deleteManyMediasService = async (
 
   for (const media of medias) {
     if (media.image) deleteFileSync(media.image);
+    if (media.thumbnail) deleteFileSync(media.thumbnail);
 
     if (media.artists?.length) {
       for (const artist of media.artists) {

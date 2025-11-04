@@ -6,8 +6,8 @@ const interviewSchema = new Schema<IInterview>(
   {
     name: { type: String, required: true, unique: true, trim: true },
     slug: { type: String, required: true, unique: true, trim: true },
-    interviewer_name: { type: String, trim: true },
-    interviewee_profession: { type: String, trim: true },
+    interviewerName: { type: String, trim: true },
+    intervieweeProfession: { type: String, trim: true },
     shortDescription: { type: String, trim: true },
     content: { type: String, required: true, trim: true },
     publishedAt: { type: String, required: true, trim: true },

@@ -14,6 +14,7 @@ const createMediaController = async (
     const data = parseMultipartBody(req.body as Record<string, any>);
 
     const mainImagePath = await uploadService(req, "image");
+    const thumbnailPath = await uploadService(req, "thumbnail");
 
     let artists = [];
     if (data.artists) {
@@ -37,6 +38,7 @@ const createMediaController = async (
     const formData = {
       ...data,
       ...(mainImagePath ? { image: mainImagePath } : {}),
+      ...(thumbnailPath ? { thumbnail: thumbnailPath } : {}),
       ...(artists.length ? { artists } : {}),
     };
 
@@ -151,6 +153,11 @@ const updateSingleMediaController = async (
     const mainImagePath = await uploadService(req, "image");
     if (mainImagePath && typeof mainImagePath === "string") {
       mediaData.image = mainImagePath;
+    }
+
+    const thumbnailPath = await uploadService(req, "thumbnail");
+    if (thumbnailPath && typeof thumbnailPath === "string") {
+      mediaData.thumbnail = thumbnailPath;
     }
 
     let artists = [];

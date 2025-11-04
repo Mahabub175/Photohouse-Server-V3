@@ -4,8 +4,8 @@ export interface IInterview {
   shortDescription: string;
   content: string;
   publishedAt: string;
-  interviewer_name: string;
-  interviewee_profession: string;
+  interviewerName: string;
+  intervieweeProfession: string;
   attachment: string;
   images: string[];
   status: boolean;

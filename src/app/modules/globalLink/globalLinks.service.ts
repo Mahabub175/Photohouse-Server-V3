@@ -14,11 +14,7 @@ const getAllGlobalLinksService = async () => {
 
   results = await globalLinksModel.find().exec();
 
-  const singleResult = results[0];
-
-  return {
-    singleResult,
-  };
+  return results[0];
 };
 
 const getSingleGlobalLinksService = async (globalLinksId: number | string) => {
