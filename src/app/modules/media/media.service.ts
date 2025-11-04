@@ -80,9 +80,6 @@ export const getSingleMediaService = async (slug: string) => {
         image: artist.image
           ? (formatResultImage(artist.image) as string)
           : artist.image,
-        flag: artist.flag
-          ? (formatResultImage(artist.flag) as string)
-          : artist.flag,
       }));
     }
 
@@ -104,8 +101,6 @@ export const getSingleMediaBySlugService = async (mediaId: string) => {
 
     if (mediaObj.image)
       mediaObj.image = formatResultImage(mediaObj.image) as string;
-    if (mediaObj.flag)
-      mediaObj.flag = formatResultImage(mediaObj.flag) as string;
 
     if (mediaObj.artists?.length) {
       mediaObj.artists = mediaObj.artists.map((artist) => ({
@@ -113,9 +108,6 @@ export const getSingleMediaBySlugService = async (mediaId: string) => {
         image: artist.image
           ? (formatResultImage(artist.image) as string)
           : artist.image,
-        flag: artist.flag
-          ? (formatResultImage(artist.flag) as string)
-          : artist.flag,
       }));
     }
 
@@ -136,15 +128,42 @@ export const updateSingleMediaService = async (
   const media = await mediaModel.findById(queryId).exec();
   if (!media) throwError("Media not found", 404);
   else {
-    Object.keys(mediaData).forEach((key) =>
-      mediaData[key as keyof IMedia] === undefined ||
-      mediaData[key as keyof IMedia] === null
-        ? delete mediaData[key as keyof IMedia]
-        : null
-    );
+    Object.keys(mediaData).forEach((key) => {
+      if (
+        mediaData[key as keyof IMedia] === undefined ||
+        mediaData[key as keyof IMedia] === null
+      ) {
+        delete mediaData[key as keyof IMedia];
+      }
+    });
 
     if (mediaData.image && media.image && mediaData.image !== media.image) {
       deleteFileSync(media.image);
+    }
+
+    if (mediaData.artists) {
+      const removedArtists = media.artists.filter(
+        (artist) =>
+          !mediaData.artists!.some(
+            (a: any) => a._id?.toString() === artist._id?.toString()
+          )
+      );
+      for (const artist of removedArtists) {
+        if (artist.image) deleteFileSync(artist.image);
+      }
+
+      for (const newArtist of mediaData.artists) {
+        const oldArtist = media.artists.find(
+          (a: any) => a._id?.toString() === newArtist._id?.toString()
+        );
+        if (
+          oldArtist &&
+          newArtist.image &&
+          newArtist.image !== oldArtist.image
+        ) {
+          deleteFileSync(oldArtist.image);
+        }
+      }
     }
 
     const updated = await mediaModel
@@ -175,7 +194,6 @@ export const deleteSingleMediaService = async (mediaId: string) => {
     if (media.artists?.length) {
       for (const artist of media.artists) {
         if (artist.image) deleteFileSync(artist.image);
-        if (artist.flag) deleteFileSync(artist.flag);
       }
     }
 

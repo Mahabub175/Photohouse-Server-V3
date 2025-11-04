@@ -1,4 +1,5 @@
 export interface IArtist {
+  _id: string;
   image: string;
   name: string;
   profession: string;

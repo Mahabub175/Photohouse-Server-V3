@@ -29,10 +29,8 @@ const createMediaController = async (
           req,
           `artists[${i}][image]`
         );
-        const artistFlagPath = await uploadService(req, `artists[${i}][flag]`);
 
         if (artistImagePath) artists[i].image = artistImagePath;
-        if (artistFlagPath) artists[i].flag = artistFlagPath;
       }
     }
 
@@ -167,10 +165,8 @@ const updateSingleMediaController = async (
           req,
           `artists[${i}][image]`
         );
-        const artistFlagPath = await uploadService(req, `artists[${i}][flag]`);
 
         if (artistImagePath) artists[i].image = artistImagePath;
-        if (artistFlagPath) artists[i].flag = artistFlagPath;
       }
     }
 
